@@ -2,11 +2,6 @@
 Filename:
     test_views.py
 """
-import json
-import pytest
-from flask import Flask
-from website.views import main_blueprint
-
 def test_index_route(client):
     """Test if the index page loads successfully."""
     response = client.get("/")

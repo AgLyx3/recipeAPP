@@ -3,7 +3,6 @@ Filename:
     views.py
 """
 import os
-import requests
 from flask import Blueprint, render_template, request, jsonify
 import google.generativeai as genai
 
@@ -17,17 +16,21 @@ def index():
     """
     Render the index page.
     """
-   
+
     return render_template('index.html')
 
 @main_blueprint.route('/get_recipes', methods=['POST'])
 def get_recipes():
+    """
+    Handle the recipe generation request.
+    """
     try:
         data = request.get_json()
         ingredients = data.get('ingredients')
-        
+
         model = genai.GenerativeModel('gemini-2.0-flash')
-        prompt = f"""Create a recipe with {ingredients}. Format the response in HTML using these rules:
+        prompt = f"""Create a recipe with {ingredients}. 
+        Format the response in HTML using these rules:
         - Use <h1> for the recipe title
         - Use <h2> for section headings
         - Use <ul> and <li> for ingredient lists
@@ -40,12 +43,12 @@ def get_recipes():
         recipe_html = response.text
         recipe_html = recipe_html.replace('```html', '')
         recipe_html = recipe_html.replace('```', '')
-        
+
         return jsonify({
             'success': True,
             'recipe': recipe_html
         })
-        
+
     except Exception as e:
         return jsonify({
             'success': False,
