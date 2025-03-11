@@ -27,6 +27,8 @@ def get_recipes():
     try:
         data = request.get_json()
         ingredients = data.get('ingredients')
+        if not ingredients:
+            raise Exception('No ingredients provided.')
 
         model = genai.GenerativeModel('gemini-2.0-flash')
         prompt = f"""Create a recipe with {ingredients}. 
