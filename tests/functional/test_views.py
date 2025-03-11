@@ -2,36 +2,39 @@
 Filename:
     test_views.py
 """
-def test_index_get(client):
-    """Test the index route with GET request"""
-    response = client.get('/')
+import json
+import pytest
+from flask import Flask
+from website.views import main_blueprint
+
+def test_index_route(client):
+    """Test if the index page loads successfully."""
+    response = client.get("/")
     assert response.status_code == 200
-    assert b'SkyCast' in response.data
+    assert b"<!DOCTYPE html>" in response.data  # Ensure HTML content is returned
 
-def test_index_post(client, valid_form_data):
-    """Test the index route with POST request"""
-    response = client.post('/', data=valid_form_data)
+def test_get_recipes_success(client, mocker):
+    """Test the /get_recipes endpoint with valid ingredients."""
+    mock_model = mocker.patch("website.views.genai.GenerativeModel")
+    mock_instance = mock_model.return_value
+    mock_instance.generate_content.return_value.text = (
+        "<h1>Sample Recipe</h1>"
+        '<div class="section"><h2>Ingredients</h2><ul><li>Tomato</li></ul></div>'
+    )
+
+    response = client.post("/get_recipes", json={"ingredients": "tomato"})
+
     assert response.status_code == 200
-    assert b'San Francisco' in response.data
+    assert response.json["success"] is True
+    assert "<h1>Sample Recipe</h1>" in response.json["recipe"]
 
-def test_index_post_invalid_form_data(client, invalid_form_data):
-    """Test the index route with invalid form data"""
-    response = client.post('/', data=invalid_form_data)
-    assert response.status_code == 200
-    assert b'None' in response.data
+def test_get_recipes_error(client, mocker):
+    """Test the /get_recipes endpoint when an API error occurs."""
+    mock_model = mocker.patch("website.views.genai.GenerativeModel")
+    mock_model.return_value.generate_content.side_effect = Exception("API Error")
 
-def test_successful_weather_request(client, valid_form_data, mock_weather_response, monkeypatch):
-    """Test successful weather data fetch through the form"""
-    def mock_fetch(city, state, country):
-        return (
-            mock_weather_response,  # weather_data
-            None,                   # error_message
-            51.5074,               # lat
-            -0.1278,              # lon
-            "San Francisco"       # name
-        )
+    response = client.post("/get_recipes", json={"ingredients": "tomato"})
 
-    monkeypatch.setattr('website.views.fetch_weather_data', mock_fetch)
-
-    response = client.post('/', data=valid_form_data)
-    assert response.status_code == 200 
+    assert response.status_code == 400
+    assert response.json["success"] is False
+    assert "API Error" in response.json["error"]

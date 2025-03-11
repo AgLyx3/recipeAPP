@@ -174,3 +174,50 @@
   document.addEventListener('scroll', navmenuScrollspy);
 
 })();
+
+
+document.getElementById('searchBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  
+  const ingredients = document.getElementById('recipesInput').value;
+  const resultsContainer = document.getElementById('recipe-results');
+  
+  // Show loading state
+  resultsContainer.innerHTML = '<div class="loading">Generating recipe...</div>';
+  
+  fetch('/get_recipes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ingredients: ingredients
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Convert line breaks in the text to HTML breaks
+      const formattedRecipe = data.recipe.replace(/\n/g, '<br>');
+      resultsContainer.innerHTML = `
+        <div class="recipe-card">
+          ${data.recipe}
+        </div>
+      `;
+    } else {
+      resultsContainer.innerHTML = `
+        <div class="error-message">
+          Failed to generate recipe. Please try again.
+        </div>
+      `;
+    }
+  })
+  .catch(error => {
+    resultsContainer.innerHTML = `
+      <div class="error-message">
+        An error occurred. Please try again later.
+      </div>
+    `;
+    console.error('Error:', error);
+  });
+});

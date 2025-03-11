@@ -17,6 +17,7 @@ def create_app(test_config=None):
     if test_config is None:
         app.config.from_mapping(
             SECRET_KEY=os.getenv('SECRET_KEY'),
+            GEMINI_API_KEY = os.getenv("GOOGLE_GEMINI_API_KEY")
         )
     else:
         app.config.update(test_config)

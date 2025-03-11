@@ -878,6 +878,64 @@ section,
   height: 100px; /* Increased height for a bigger input field */
 }
 
+.recipe-card {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recipe-card h1 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.recipe-card h2 {
+  color: #444;
+  margin: 1.5rem 0 1rem;
+  font-size: 1.5rem;
+}
+
+.recipe-card .section {
+  margin-bottom: 2rem;
+}
+
+.recipe-card ul, 
+.recipe-card ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.recipe-card li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.recipe-card p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.recipe-card strong {
+  color: #222;
+  font-weight: 600;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.error-message {
+  color: #dc3545;
+  text-align: center;
+  padding: 20px;
+}
+
 
 @media (max-width: 640px) {
   .hero h1 {
